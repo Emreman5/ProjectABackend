@@ -1,6 +1,6 @@
 *.suo
 *.user
 .idea*
-bin
-obj
+**/bin/*
+**/obj/*
 packages
