@@ -62,7 +62,8 @@ public abstract class EfRepositoryBase<TEntity, TContext> : IUnitOfWork ,IReposi
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        Context.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     public int Commit()
