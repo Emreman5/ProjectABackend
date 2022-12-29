@@ -8,7 +8,8 @@ namespace Core.Entities.Concrete;
 public class DatabaseEntity : IDatabaseEntity<int>
 {
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int Id { get; }
+    public int Id { get; set; }
     
     public DateTime CreatedAt { get; set; } = DateTime.Now;
+    public DateTime LastUpdate { get; set; }
 }

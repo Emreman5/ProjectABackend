@@ -10,4 +10,5 @@ public interface IDatabaseEntity<out TKey> : IDatabaseEntity where TKey : IEquat
 {
     public TKey Id { get; }
     DateTime CreatedAt { get; set; }
+    DateTime LastUpdate { get; set; }
 }
