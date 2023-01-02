@@ -2,6 +2,9 @@
 
 public class DataResult<T> : Result, IDataResult<T>
 {
+    public DataResult()
+    {
+    }
     public DataResult(T data, bool isSuccess, string message) : base(isSuccess, message)
     {
         Data = data;
@@ -12,5 +15,6 @@ public class DataResult<T> : Result, IDataResult<T>
         Data = data;
     }
 
+  
     public T Data { get; set; }
 }

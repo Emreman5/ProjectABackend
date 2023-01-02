@@ -6,7 +6,10 @@ public class ErrorResult : Result
     {
     }
 
-    public ErrorResult(bool isSuccess) : base(isSuccess)
+    public ErrorResult() : base(false)
+    {
+    }
+    public ErrorResult(string message) : base(false, message)
     {
     }
 }

@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Entities.Abstract;
+using Core.Utilities.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace Core.DataAccess.Repository
@@ -16,7 +17,7 @@ namespace Core.DataAccess.Repository
 
         public Repository(DbContext context)
         {
-            _context = context;
+            this._context = context;
         }
 
         public virtual IQueryable<TEntity> Query()
@@ -68,7 +69,21 @@ namespace Core.DataAccess.Repository
             await Task.Run(() => _context.Set<TEntity>().Remove(entity));
          
         }
+        public async Task<List<TEntity>> GetPagedData(PaginationFilter filter)
+        {
+            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+            var pagedData = await _context.Set<TEntity>()
+                .Skip((validFilter.PageNumber - 1) * validFilter.PageSize)
+                .Take(validFilter.PageSize)
+                .ToListAsync();
+            return pagedData;
+        }
 
-        
+        public async Task<int> GetTotalRecords()
+        {
+            var totalRecords = await _context.Set<TEntity>().CountAsync();
+            return totalRecords;
+        }
+
     }
 }

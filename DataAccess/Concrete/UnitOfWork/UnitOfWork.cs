@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccess.Concrete.Context;
 using DataAccess.Concrete.Repositories.Abstract;
 using DataAccess.Concrete.Repositories.Concrete;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ namespace DataAccess.Concrete.UnitOfWork
         public ICampaignRepository CampaignRepository { get; }
         public IReservationRepository ReservationRepository { get; }
         public ICategoryRepository CategoryRepository { get; }
-        public IAdressRepository AdressRepository { get; }
+        public IAddressRepository AdressRepository { get; }
 
         public IOrderRepository Order { get; }
         public IMenuImageRepository MenuImage { get; }
@@ -61,6 +62,11 @@ namespace DataAccess.Concrete.UnitOfWork
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public MsSqlDbContext GetContext()
+        {
+            return (MsSqlDbContext)_dbContext;
         }
     }
 }

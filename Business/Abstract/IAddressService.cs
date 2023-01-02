@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Business.Abstract
 {
-    public interface AddressService
+    public interface IAddressService
     {
         IDataResult<List<Adress>> GetAll();
         IResult Add(Adress address);

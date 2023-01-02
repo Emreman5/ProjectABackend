@@ -8,7 +8,7 @@ using Model;
 
 namespace DataAccess.Concrete.Repositories.Abstract
 {
-    public interface IAdressRepository : IRepository<Adress>
+    public interface IAddressRepository : IRepository<Adress>
     {
     }
 }

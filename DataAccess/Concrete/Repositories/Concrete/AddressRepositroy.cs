@@ -10,7 +10,7 @@ using Model;
 
 namespace DataAccess.Concrete.Repositories.Concrete
 {
-    public class AddressRepository : Repository<Adress>, IAdressRepository
+    public class AddressRepository : Repository<Adress>, IAddressRepository
     {
         public AddressRepository(DbContext context) : base(context)
         {

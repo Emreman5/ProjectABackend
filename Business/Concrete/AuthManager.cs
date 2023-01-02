@@ -1,0 +1,148 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Business.Abstract;
+using Business.Constants.Messages;
+using Business.Security;
+using Core.Entities.Concrete;
+using Core.Utilities.Business;
+using Core.Utilities.ResponseTypes;
+using DataAccess.Concrete;
+using DataAccess.Concrete.UnitOfWork;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Model;
+using Model.Abstract;
+using Model.DTO;
+
+namespace Business.Concrete
+{
+    public class AuthManager : IAuthService
+    {
+        private readonly UserManager<CustomUser> _userManager;
+        private readonly SignInManager<CustomUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private IUnitOfWork _unitOfWork;
+
+        public AuthManager(UserManager<CustomUser> userManager, 
+            SignInManager<CustomUser> signInManager, 
+            RoleManager<IdentityRole> roleManager,
+            IUnitOfWork unitOfWork)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<IResult> Register(RegisterDto registerDto)
+        {
+           var logic = BusinessRules.Run(UserExistsEmail(registerDto.Email).Result, UserExistsUserName(registerDto.Username).Result);
+            if (logic.IsSuccess == false)
+                return await Task.FromResult(logic);
+            var user = new CustomUser()
+            {
+                UserName = registerDto.Username,
+                Email = registerDto.Email,
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+            };
+            await _userManager.CreateAsync(user, registerDto.Password);
+            await DefaultRole();
+            await _userManager.AddToRoleAsync(user, "User");
+            return new SuccessResult();
+
+        }
+
+        public async Task<IDataResult<AuthResponseDto>> Login(LoginDto loginDto, IConfiguration config)
+        {
+            var user =  await _userManager.FindByEmailAsync(loginDto.Email);
+            var tokenGenerator = new AccessTokenGenerator(_unitOfWork.GetContext(), config, user);
+            var logic = BusinessRules.Run(await SignIn(user, loginDto.Password));
+            if (logic.IsSuccess == false)
+                return new ErrorDataResult<AuthResponseDto>(logic.Message);
+            ApplicationUserToken userTokens =  tokenGenerator.GetToken();
+            var roles =  await _userManager.GetRolesAsync(user);
+            var token = new Token()
+            {
+                TokenBody = userTokens.Value,
+                ExpireDate = userTokens.ExpireDate,
+                RefreshToken = user.RefreshToken,
+                RefreshTokenExpireDate = user.RefreshTokenExpireDate
+            };
+            var result = new AuthResponseDto()
+            {
+                Email = user.Email, Roles = roles.ToList(), Token = token, UserId = user.Id, Status = true
+            };
+            return new SuccessDataResult<AuthResponseDto>(result);
+        }
+
+        public  IDataResult<Token> RefreshToken(string token, IConfiguration config)
+        {
+            var context = _unitOfWork.GetContext();
+            var user =  _userManager.Users.FirstOrDefault(x => x.RefreshToken == token);
+            var accessTokenGenerator = new AccessTokenGenerator(context, config, user);
+            var expireDate = accessTokenGenerator.GetTokenExpireDate(token, user).Result;
+            if (expireDate < DateTime.Now && user.RefreshTokenExpireDate!.Value > DateTime.Now)
+            {
+                
+                var userToken = accessTokenGenerator.GetToken();
+                var result = new Token()
+                {
+                    TokenBody = userToken.Value, ExpireDate = userToken.ExpireDate, RefreshToken = user.RefreshToken,
+                    RefreshTokenExpireDate = user.RefreshTokenExpireDate
+                };
+                return new SuccessDataResult<Token>(token);
+            } 
+            if (user.RefreshTokenExpireDate.Value < DateTime.Now)
+            {
+                return new ErrorDataResult<Token>(AuthMessages.TryAgain);
+            }
+
+            return new ErrorDataResult<Token>(AuthMessages.TokenStillUsable);
+        }
+
+        private async Task<IResult> UserExistsEmail(string email)
+        {
+            if (await _userManager.FindByEmailAsync(email) != null)
+            {
+                return new ErrorResult(AuthMessages.EmailAlreadyInUse);
+            }
+            return new SuccessResult();
+        }
+        private async Task<IResult> UserExistsUserName(string userName)
+        {
+            if (await _userManager.FindByNameAsync(userName) != null)
+            {
+                return new ErrorResult(AuthMessages.UserNameAlreadyInUse);
+            }
+            return new SuccessResult();
+
+        }
+
+        private async Task DefaultRole()
+        {
+            bool roleExists = await _roleManager.RoleExistsAsync("User");
+
+            if (!roleExists)
+            {
+                IdentityRole role = new IdentityRole("User");
+                role.NormalizedName = "User";
+
+                _roleManager.CreateAsync(role).Wait();
+            }
+        }
+
+        private async Task<IResult> SignIn(CustomUser user, string password)
+        {
+            var result = await _signInManager.PasswordSignInAsync(user, password, false, false);
+            if (result.Succeeded == false)
+            {
+                return new ErrorResult();
+            }
+            return new SuccessResult();
+        }
+    }
+}

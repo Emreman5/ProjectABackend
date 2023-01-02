@@ -9,7 +9,6 @@ namespace Model
 {
     public class Product : DatabaseEntity
     {
-        public int RestaurantId { get; set; }
         public int CategoryId { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }

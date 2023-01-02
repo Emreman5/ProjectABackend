@@ -11,7 +11,11 @@ public class Result : IResult
     {
      IsSuccess = isSuccess;
     }
-    
+
+    public Result()
+    {
+        
+    }
     public bool IsSuccess { get; set; }
     public string Message { get; set; }
 }

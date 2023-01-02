@@ -8,7 +8,7 @@ public static class BusinessRules
     {
         foreach (var logic in logics)
         {
-            if (!logic.IsSuccess)
+            if (logic.IsSuccess == false)
             {
                 return logic;
             }
