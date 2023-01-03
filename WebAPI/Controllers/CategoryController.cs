@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Model.DTO;
 
 namespace WebAPI.Controllers
 {
@@ -23,10 +24,25 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
         [HttpPost("Add")]
-        public async Task<IActionResult> Add([FromBody] Category category)
+        public Task<IActionResult> Add([FromBody] CategoryDto category)
         {
             var result = _categoryService.Add(category).Result;
-            return Ok(result);
+            return Task.FromResult<IActionResult>(Ok(result));
         }
+
+        [HttpPost("Update/{id}")]
+        public Task<IActionResult> Update([FromBody] CategoryDto category, int id)
+        {
+            var result = _categoryService.Update(category, id);
+            return Task.FromResult<IActionResult>(Ok(result));
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public Task<IActionResult> Delete(int id)
+        {
+            var result = _categoryService.Delete(id);
+            return Task.FromResult<IActionResult>(Ok(result));
+        }
+
     }
 }

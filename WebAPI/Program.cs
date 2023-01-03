@@ -95,6 +95,8 @@ builder.Services.AddScoped<IAuthService, AuthManager>();
 builder.Services.AddSingleton<IFileHelper, FileHelperManager>();
 builder.Services.AddScoped<IProductService, ProductManager>();
 builder.Services.AddScoped<ICategoryService, CategoryManager>();
+builder.Services.AddScoped<IOrderService, OrderManager>();
+
 
 
 var app = builder.Build();

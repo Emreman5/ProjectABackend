@@ -79,6 +79,12 @@ namespace Core.DataAccess.Repository
             return pagedData;
         }
 
+        public async Task<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities)
+        {
+            await _context.AddRangeAsync(entities);
+            return entities;
+        }
+
         public async Task<int> GetTotalRecords()
         {
             var totalRecords = await _context.Set<TEntity>().CountAsync();

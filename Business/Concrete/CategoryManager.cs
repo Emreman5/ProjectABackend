@@ -8,6 +8,7 @@ using Core.Utilities.ResponseTypes;
 using DataAccess.Concrete.Repositories.Abstract;
 using DataAccess.Concrete.UnitOfWork;
 using Model;
+using Model.DTO;
 
 namespace Business.Concrete
 {
@@ -29,16 +30,18 @@ namespace Business.Concrete
             return new SuccessDataResult<List<Category>>(result);
         }
 
-        public  async Task<IResult> Add(Category category)
+        public  async Task<IResult> Add(CategoryDto category)
         {
-            await _category.AddAsync(category);
+            await _category.AddAsync(category.CreateEntity());
             await _unitOfWork.CompleteAsync();
             return new SuccessResult();
         }
 
-        public IResult Update(Category category)
+        public IResult Update(CategoryDto category, int id)
         {
-            _category.UpdateAsync(category);
+            var model = category.CreateEntity();
+            model.Id = id;
+            _category.UpdateAsync(model);
             _unitOfWork.CompleteAsync();
             return new SuccessResult();
         }

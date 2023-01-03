@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model;
+using Model.DTO;
 
 namespace WebAPI.Controllers
 {
@@ -28,11 +29,12 @@ namespace WebAPI.Controllers
             return Task.FromResult<IActionResult>(Ok(result));
         }   
         [HttpPost]
-        public Task<IActionResult> Add([FromBody] Product menu )
+        public Task<IActionResult> Add([FromBody] ProductPostDto menu )
         {
            var result = _productService.Add(menu);
            return Task.FromResult<IActionResult>(Ok(result));
         }
+
         [HttpGet("detail/{id}")]
         public async Task<IActionResult> GetAll(int id)
         {
@@ -45,6 +47,29 @@ namespace WebAPI.Controllers
         {
             var result = await _productService.GetAllWithDetails(filter, _imageRoot);
             return Ok(result);
+        }
+
+        [HttpPost("Update/{id}")]
+        public async Task<IActionResult> Update([FromBody] ProductPostDto product, int id)
+        {
+            var result = _productService.Update(product, id);
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+            return Ok(result);
+        }
+
+        [HttpDelete("Delete/{id}")]
+        public Task<IActionResult> Delete(int id)
+        {
+            var result = _productService.Delete(id);
+            if (!result.IsSuccess)
+            {
+                return Task.FromResult<IActionResult>(BadRequest(result));
+            }
+
+            return Task.FromResult<IActionResult>(Ok(result));
         }
     }
 }

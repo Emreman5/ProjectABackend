@@ -8,6 +8,7 @@ using Core.Utilities.ResponseTypes;
 using DataAccess.Concrete.Repositories.Abstract;
 using DataAccess.Concrete.UnitOfWork;
 using Model;
+using Model.DTO;
 
 namespace Business.Concrete
 {
@@ -15,41 +16,49 @@ namespace Business.Concrete
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IOrderRepository _orderRepository;
+        private readonly IOrderDetailRepository _orderDetailRepository;
         public OrderManager(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
             _orderRepository = _unitOfWork.Order;
+            _orderDetailRepository = _unitOfWork.OrderDetailRepository;
         }
 
-        public IDataResult<List<Order>> GetAll()
-        {
-            var result = _orderRepository.Query().ToList();
-            return new SuccessDataResult<List<Order>>(result);
-        }
 
-        public IResult Add(Order order)
+        public async Task<IResult> CreateOrder(OrderDto order)
         {
-            _orderRepository.AddAsync(order);
+            var ordersDetailsDto = order.Orders;
+            var orderEntity = order.CreateEntity();
+            await _orderRepository.AddAsync(orderEntity);
+            await _unitOfWork.CompleteAsync();
+            int id = _orderRepository.FindAllAsync(o => o.Id == order.CustomerId).Result.Last().Id;
+            var ordersDetails = ordersDetailsDto.Select(o => o.CreateEntity(id));
+            await _orderDetailRepository.AddRange(ordersDetails);
+            await _unitOfWork.CompleteAsync();
             return new SuccessResult();
         }
 
-        public IResult Update(Order order)
+        public IResult DeleteOrder(int orderId)
         {
-            _orderRepository.UpdateAsync(order);
-            return new SuccessResult();
+            throw new NotImplementedException();
         }
 
-        public IDataResult<Order> GetById(int id)
+        public async Task<IDataResult<List<Order>>> GetOrdersByCustomerId(int customerId)
         {
-            var selected = _orderRepository.GetByIdAsync(id).Result;
-            return new SuccessDataResult<Order>(selected);
+            var orders = await _orderRepository.FindAllAsync(o => o.CustomerId == customerId);
+            return new SuccessDataResult<List<Order>>(orders.ToList());
         }
 
-        public IResult Delete(int id)
+        public async Task<IDataResult<List<Order>>> GetAllOrders()
         {
-            var selected = _orderRepository.GetByIdAsync(id).Result;
-            _orderRepository.DeleteAsync(selected);
-            return new SuccessResult();
+            var orders = await _orderRepository.GetAllAsync();
+            return new SuccessDataResult<List<Order>>(orders.ToList());
+        }
+
+        public async Task<IDataResult<List<OrderDetail>>> GetOrderDetailsById(int orderId)
+        {
+            var order = await _orderDetailRepository.FindAllAsync(o => o.OrderId == orderId);
+            return new SuccessDataResult<List<OrderDetail>>(order.ToList());
         }
     }
 }

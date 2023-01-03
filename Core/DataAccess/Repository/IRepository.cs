@@ -27,6 +27,7 @@ namespace Core.DataAccess.Repository
 
         Task DeleteAsync(TEntity entity);
         Task<List<TEntity>> GetPagedData(PaginationFilter filter);
+        Task<IEnumerable<TEntity>> AddRange(IEnumerable<TEntity> entities);
         Task<int> GetTotalRecords();
     }
 }

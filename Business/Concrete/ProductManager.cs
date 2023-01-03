@@ -12,6 +12,7 @@ using DataAccess.Concrete.Repositories.Abstract;
 using DataAccess.Concrete.UnitOfWork;
 using Model;
 using Model.Abstract;
+using Model.DTO;
 
 namespace Business.Concrete
 {
@@ -22,8 +23,8 @@ namespace Business.Concrete
         private readonly IUriService _uriService;
         public ProductManager(IUnitOfWork unitOfWork, IUriService uriService)
         {
-            _unitOfWork = unitOfWork;
-            this._uriService = uriService;
+            _unitOfWork = unitOfWork; 
+            _uriService = uriService;
             _product = _unitOfWork.ProductRepository;
         }
 
@@ -37,16 +38,18 @@ namespace Business.Concrete
             return pagedResult;
         }
 
-        public IResult Add(Product product)
+        public IResult Add(ProductPostDto product)
         {
-            _product.AddAsync(product);
+            _product.AddAsync(product.CreateEntity());
             _unitOfWork.CompleteAsync();
             return new SuccessResult();
         }
 
-        public IResult Update(Product product)
+        public IResult Update(ProductPostDto product, int id)
         {
-            _product.UpdateAsync(product);
+            var param = product.CreateEntity();
+            param.Id = id;
+            _product.UpdateAsync(param);
             return new SuccessResult();
         }
 
