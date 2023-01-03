@@ -56,6 +56,17 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<MsSqlDbContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer(conf.GetConnectionString("MsSqlConnectionString")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 builder.Services.AddIdentity<CustomUser, IdentityRole>().AddEntityFrameworkStores<MsSqlDbContext>().
     AddDefaultTokenProviders().AddRoles<IdentityRole>().AddRoleManager<RoleManager<IdentityRole>>();
 
@@ -114,5 +125,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors(builder =>
+{
+    builder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+});
 
 app.Run();
