@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Model.DTO
 {
@@ -13,7 +14,6 @@ namespace Model.DTO
         public string? Description { get; set; }
         public string? Title { get; set; }
         public double Price { get; set; }
-
         public Product CreateEntity()
         {
             return new Product

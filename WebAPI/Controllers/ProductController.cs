@@ -27,12 +27,13 @@ namespace WebAPI.Controllers
             var route = Request.Path.Value;
             var result = _productService.GetAll(filter, route);
             return Task.FromResult<IActionResult>(Ok(result));
-        }   
+        }
+
         [HttpPost]
-        public Task<IActionResult> Add([FromBody] ProductPostDto menu )
+        public async Task<IActionResult> Add([FromForm] ProductPostDto menu, [FromForm] List<IFormFile> files)
         {
-           var result = _productService.Add(menu);
-           return Task.FromResult<IActionResult>(Ok(result));
+           var result = await _productService.Add(menu, files);
+           return Ok(result);
         }
 
         [HttpGet("detail/{id}")]

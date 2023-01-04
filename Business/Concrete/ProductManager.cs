@@ -10,6 +10,7 @@ using Core.Utilities.ResponseTypes;
 using Core.Utilities.Uri;
 using DataAccess.Concrete.Repositories.Abstract;
 using DataAccess.Concrete.UnitOfWork;
+using Microsoft.AspNetCore.Http;
 using Model;
 using Model.Abstract;
 using Model.DTO;
@@ -20,12 +21,14 @@ namespace Business.Concrete
     {
         private readonly  IUnitOfWork _unitOfWork;
         private readonly IProductRepository _product;
+        private readonly IProductImageService _imageService;
         private readonly IUriService _uriService;
-        public ProductManager(IUnitOfWork unitOfWork, IUriService uriService)
+        public ProductManager(IUnitOfWork unitOfWork, IUriService uriService, IProductImageService imageService)
         {
             _unitOfWork = unitOfWork; 
             _uriService = uriService;
             _product = _unitOfWork.ProductRepository;
+            _imageService = imageService;
         }
 
         public IDataResult<List<Product>> GetAll(PaginationFilter filter, string route)
@@ -38,9 +41,16 @@ namespace Business.Concrete
             return pagedResult;
         }
 
-        public IResult Add(ProductPostDto product)
+        public async Task<IResult> Add(ProductPostDto product, List<IFormFile> files)
         {
-            _product.AddAsync(product.CreateEntity());
+            await _product.AddAsync(product.CreateEntity());
+            await _unitOfWork.CompleteAsync();
+            var products = await _product.GetAllAsync();
+            var productId = products.Last().Id;
+            foreach (var item in files)
+            {
+                _imageService.Add(new ProductImageDto(){ProductId = productId, File = item});
+            }
             _unitOfWork.CompleteAsync();
             return new SuccessResult();
         }

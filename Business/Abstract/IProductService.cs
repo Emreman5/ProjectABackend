@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Core.Utilities.Pagination;
+using Microsoft.AspNetCore.Http;
 using Model.Abstract;
 using Model.DTO;
 
@@ -14,7 +15,7 @@ namespace Business.Abstract
     public interface IProductService
     {
         IDataResult<List<Product>> GetAll(PaginationFilter filter, string route);
-        IResult Add(ProductPostDto product);
+         Task<IResult> Add(ProductPostDto product, List<IFormFile> files);
         IResult Update(ProductPostDto product, int id);
         IDataResult<Product> GetById(int id);
         Task<IResult> Delete(int id);
