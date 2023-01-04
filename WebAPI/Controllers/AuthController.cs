@@ -20,7 +20,7 @@ namespace WebAPI.Controllers
         [HttpPost("register")]
         public Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            var result = _authService.Register(dto).Result;
+            var result = _authService.Register(dto, _config).Result;
             return Task.FromResult<IActionResult>(Ok(result));
         }
         [HttpPost("login")]

@@ -17,7 +17,7 @@ namespace Business.Abstract
         IResult Add(ProductPostDto product);
         IResult Update(ProductPostDto product, int id);
         IDataResult<Product> GetById(int id);
-        IResult Delete(int id);
+        Task<IResult> Delete(int id);
         Task<IDataResult<ProductDetailDto>> GetProductDetailById(int id, string route);
         Task<IDataResult<List<ProductDetailDto>>> GetAllWithDetails(PaginationFilter filter, string route);
 

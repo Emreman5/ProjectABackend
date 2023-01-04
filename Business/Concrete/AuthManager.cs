@@ -37,11 +37,11 @@ namespace Business.Concrete
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IResult> Register(RegisterDto registerDto)
+        public async Task<IDataResult<AuthResponseDto>> Register(RegisterDto registerDto, IConfiguration config)
         {
            var logic = BusinessRules.Run(UserExistsEmail(registerDto.Email).Result, UserExistsUserName(registerDto.Username).Result);
             if (logic.IsSuccess == false)
-                return await Task.FromResult(logic);
+                return await Task.FromResult(new ErrorDataResult<AuthResponseDto>(logic.Message));
             var user = new CustomUser()
             {
                 UserName = registerDto.Username,
@@ -52,7 +52,9 @@ namespace Business.Concrete
             await _userManager.CreateAsync(user, registerDto.Password);
             await DefaultRole();
             await _userManager.AddToRoleAsync(user, "User");
-            return new SuccessResult();
+
+            var result = await Login(new LoginDto() { Email = registerDto.Email, Password = registerDto.Password }, config);
+            return result;
 
         }
 
@@ -102,6 +104,11 @@ namespace Business.Concrete
             }
 
             return new ErrorDataResult<Token>(AuthMessages.TokenStillUsable);
+        }
+
+        public IDataResult<AuthResponseDto> AuthMe(string token)
+        {
+            throw new NotImplementedException();
         }
 
         private async Task<IResult> UserExistsEmail(string email)

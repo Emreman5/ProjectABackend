@@ -9,9 +9,11 @@ namespace Business.Abstract
 {
     public interface IAuthService
     {
-        public Task<IResult> Register(RegisterDto registerDto);
+        public Task<IDataResult<AuthResponseDto>> Register(RegisterDto registerDto, IConfiguration config);
         public Task<IDataResult<AuthResponseDto>> Login(LoginDto loginDto, IConfiguration config);
         public IDataResult<Token> RefreshToken(string token, IConfiguration config);
+        public IDataResult<AuthResponseDto> AuthMe(string token);
+
 
 
     }

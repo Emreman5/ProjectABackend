@@ -59,11 +59,11 @@ namespace Business.Concrete
            return new SuccessDataResult<Product>(selected);
         }
 
-        public IResult Delete(int id)
+        public async Task<IResult> Delete(int id)
         {
-           var selected = _product.GetByIdAsync(id).Result;
-           _product.DeleteAsync(selected);
-           _unitOfWork.CompleteAsync();
+           var selected = await _product.GetByIdAsync(id);
+           await _product.DeleteAsync(selected);
+           await _unitOfWork.CompleteAsync();
            return new SuccessResult();
         }
 
