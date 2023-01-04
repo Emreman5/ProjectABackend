@@ -63,6 +63,7 @@ namespace Business.Concrete
         {
            var selected = _product.GetByIdAsync(id).Result;
            _product.DeleteAsync(selected);
+           _unitOfWork.CompleteAsync();
            return new SuccessResult();
         }
 
