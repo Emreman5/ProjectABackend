@@ -65,17 +65,18 @@ namespace DataAccess.Concrete.UnitOfWork
             GC.SuppressFinalize(this);
         }
 
-        public CustomUser GetUserByToken(string token)
+        public async Task<CustomUser> GetUserByToken(string token)
         {
-            var userId = _dbContext.Set<ApplicationUserToken>().FirstOrDefault(u => u.Value == token).UserId;
+            var userIdT =  await _dbContext.Set<ApplicationUserToken>().FirstOrDefaultAsync(u => u.Value == token);
+            var userId = userIdT.UserId;
             var user = _dbContext.Set<CustomUser>().FirstOrDefault(u => u.Id == userId);
             return user;
         }
 
-        public ApplicationUserToken FindToken(string token)
+        public async Task<ApplicationUserToken> GetTokenByTokenValue(string token)
         {
-            var userToken = _dbContext.Set<ApplicationUserToken>().FirstOrDefault(t => t.Value == token);
-            return userToken;
+            var appToken = await _dbContext.Set<ApplicationUserToken>().FirstAsync(o => o.Value == token);
+            return appToken;
         }
 
         public MsSqlDbContext GetContext()

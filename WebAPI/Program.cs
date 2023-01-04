@@ -14,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Model;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,7 +55,10 @@ builder.Services.AddSwaggerGen(c =>
 
 
 builder.Services.AddDbContext<MsSqlDbContext>(optionsBuilder =>
-    optionsBuilder.UseSqlServer(conf.GetConnectionString("MsSqlConnectionString")));
+{
+    optionsBuilder.UseSqlServer(conf.GetConnectionString("MsSqlConnectionString"));
+    optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+});
 
 builder.Services.AddCors(options =>
 {

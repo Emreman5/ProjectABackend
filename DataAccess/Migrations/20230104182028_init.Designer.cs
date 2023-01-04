@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(MsSqlDbContext))]
-    [Migration("20230102170103_init")]
+    [Migration("20230104182028_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -177,13 +177,18 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("CustomUserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CustomUserId1")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomUserId1");
 
                     b.ToTable("Adresses");
                 });
@@ -357,6 +362,9 @@ namespace DataAccess.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CustomUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
@@ -370,6 +378,8 @@ namespace DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CustomUserId");
 
                     b.ToTable("Orders");
                 });
@@ -422,9 +432,6 @@ namespace DataAccess.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("IconBase64")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("LastUpdate")
                         .HasColumnType("datetime2");
 
@@ -438,6 +445,8 @@ namespace DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("Menus");
                 });
@@ -549,6 +558,35 @@ namespace DataAccess.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Model.Adress", b =>
+                {
+                    b.HasOne("Model.CustomUser", "CustomUser")
+                        .WithMany()
+                        .HasForeignKey("CustomUserId1");
+
+                    b.Navigation("CustomUser");
+                });
+
+            modelBuilder.Entity("Model.Order", b =>
+                {
+                    b.HasOne("Model.CustomUser", "CustomUser")
+                        .WithMany()
+                        .HasForeignKey("CustomUserId");
+
+                    b.Navigation("CustomUser");
+                });
+
+            modelBuilder.Entity("Model.Product", b =>
+                {
+                    b.HasOne("Model.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }

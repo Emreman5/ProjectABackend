@@ -12,5 +12,6 @@ namespace Core.Entities.Concrete
         public string? RefreshToken { get; set; }
         public DateTime ExpireDate { get; set; }
         public DateTime? RefreshTokenExpireDate { get; set; }
+
     }
 }

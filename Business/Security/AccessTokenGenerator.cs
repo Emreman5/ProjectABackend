@@ -35,10 +35,10 @@ namespace Business.Security
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_config["Application:Secret"]);
             var authRoles = from role in _context.Roles
-                            join userRole in _context.UserRoles
-                            on role.Id equals userRole.RoleId
-                            where userRole.UserId == _user.Id
-                            select new { RoleName = role.Name };
+                join userRole in _context.UserRoles
+                    on role.Id equals userRole.RoleId
+                where userRole.UserId == _user.Id
+                select new { RoleName = role.Name };
             var authClaims = new List<Claim>();
             foreach (var item in authRoles)
             {
@@ -57,7 +57,8 @@ namespace Business.Security
                 }),
 
                 Expires = expireDate,
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                    SecurityAlgorithms.HmacSha256Signature)
             };
 
             tokenDescriptor.Subject.AddClaims(authClaims);
@@ -71,8 +72,9 @@ namespace Business.Security
             tokenInfo.RefreshToken = Guid.NewGuid().ToString();
 
             _user.RefreshToken = tokenInfo.RefreshToken;
-            _user.RefreshTokenExpireDate = tokenInfo.ExpireDate.AddMinutes(5);
+            _user.RefreshTokenExpireDate = tokenInfo.ExpireDate.AddSeconds(30);
             _context.Users.Update(_user);
+            _context.SaveChanges();
             return tokenInfo;
         }
 
@@ -109,6 +111,7 @@ namespace Business.Security
 
                 _context.AspNetUserTokens.Add(userTokens);
             }
+
             _context.SaveChangesAsync();
 
             return userTokens;
@@ -122,17 +125,26 @@ namespace Business.Security
             {
                 if (_context.AspNetUserTokens.Count(x => x.UserId == _user.Id) > 0)
                 {
-                    ApplicationUserToken userTokens = userTokens = _context.AspNetUserTokens.FirstOrDefault(x => x.UserId == _user.Id);
+                    ApplicationUserToken userTokens =
+                        userTokens = _context.AspNetUserTokens.FirstOrDefault(x => x.UserId == _user.Id);
 
                     _context.AspNetUserTokens.Remove(userTokens);
                 }
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception)
             {
                 result = false;
             }
+
             return result;
+        }
+
+        public async Task<ApplicationUserToken> GetTokenByTokenValue(string token)
+        {
+            var appToken = await _context.AspNetUserTokens.FirstAsync(o => o.Value == token);
+            return appToken;
         }
 
         public async Task<DateTime> GetTokenExpireDate(string refreshToken, CustomUser user)
@@ -141,5 +153,6 @@ namespace Business.Security
             var result = refToken.ExpireDate;
             return result;
         }
-    }
+    
+}
 }

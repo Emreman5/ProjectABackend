@@ -24,7 +24,7 @@ namespace DataAccess.Concrete.UnitOfWork
         Task CompleteAsync();
         void Dispose();
         public MsSqlDbContext GetContext();
-        public CustomUser GetUserByToken(string token);
-        public ApplicationUserToken FindToken(string token);
+        public Task<CustomUser> GetUserByToken(string token);
+        public Task<ApplicationUserToken> GetTokenByTokenValue(string token);
     }
 }
