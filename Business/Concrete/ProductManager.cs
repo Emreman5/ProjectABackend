@@ -43,7 +43,8 @@ namespace Business.Concrete
 
         public async Task<IResult> Add(ProductPostDto product, List<IFormFile> files)
         {
-            await _product.AddAsync(product.CreateEntity());
+            var selectedCategory = _unitOfWork.CategoryRepository.Query().FirstOrDefault(c => c.CategoryName == product.Category);
+            await _product.AddAsync(product.CreateEntity(selectedCategory.Id));
             await _unitOfWork.CompleteAsync();
             var products = await _product.GetAllAsync();
             var productId = products.Last().Id;
@@ -57,7 +58,8 @@ namespace Business.Concrete
 
         public IResult Update(ProductPostDto product, int id)
         {
-            var param = product.CreateEntity();
+            var selectedCategory = _unitOfWork.CategoryRepository.Query().FirstOrDefault(c => c.CategoryName == product.Category);
+            var param = product.CreateEntity(selectedCategory.Id);
             param.Id = id;
             _product.UpdateAsync(param);
             return new SuccessResult();

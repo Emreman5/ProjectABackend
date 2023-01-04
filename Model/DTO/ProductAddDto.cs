@@ -9,15 +9,15 @@ namespace Model.DTO
 {
     public class ProductPostDto
     {
-        public int CategoryId { get; set; }
+        public string Category { get; set; }
         public string? Name { get; set; }
         public string? Description { get; set; }
         public string? Title { get; set; }
         public double Price { get; set; }
-        public Product CreateEntity()
+        public Product CreateEntity(int categoryId)
         {
             return new Product
-                { CategoryId = CategoryId, Name = Name, Description = Description, Title = Title, Price = Price };
+                { CategoryId =  categoryId ,Name = Name, Description = Description, Title = Title, Price = Price };
         }
     }
 }

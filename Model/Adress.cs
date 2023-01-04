@@ -10,6 +10,7 @@ namespace Model
 {
     public class Adress : DatabaseEntity
     {
+
         public int CustomUserId { get; set; }
         public string? AdressDetail { get; set; }
     }
