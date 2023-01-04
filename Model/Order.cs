@@ -11,9 +11,7 @@ namespace Model
     public class Order : DatabaseEntity
     {
 
-        [ForeignKey("id")]
         public int CustomerId { get; set; }
-        public CustomUser CustomUser { get; set; }
         public DateTime OrderDate { get; set; }
         public bool OrderStatus { get; set; }
     }
