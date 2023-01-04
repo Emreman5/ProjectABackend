@@ -15,5 +15,16 @@ namespace Model.DTO
         public List<string> Roles { get; set; } = new List<string>();
         public string? UserId { get; set; }
         public Token? Token { get; set; }
+
+        public void SetUser(CustomUser user, List<string> roles, Token token, string message)
+        {
+            Email = user.Email;
+            Roles = roles;
+            UserId = user.Id;
+            Token = token;
+            Status = true;
+            Message = message;
+
+        }
     }
 }

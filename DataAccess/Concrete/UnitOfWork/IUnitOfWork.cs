@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccess.Concrete.Context;
 using DataAccess.Concrete.Repositories.Abstract;
+using Model;
 
 namespace DataAccess.Concrete.UnitOfWork
 {
@@ -23,5 +24,7 @@ namespace DataAccess.Concrete.UnitOfWork
         Task CompleteAsync();
         void Dispose();
         public MsSqlDbContext GetContext();
+        public CustomUser GetUserByToken(string token);
+        public ApplicationUserToken FindToken(string token);
     }
 }

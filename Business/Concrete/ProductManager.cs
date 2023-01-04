@@ -82,5 +82,15 @@ namespace Business.Concrete
                 PaginationHelper.CreatePagedResponse<ProductDetailDto>(pagedData, validFilter, totalRecords, _uriService, route);
             return await Task.FromResult<IDataResult<List<ProductDetailDto>>>(pagedResult);
         }
+
+        public async Task<IDataResult<List<ProductDetailDto>>> GetByCategoryId(PaginationFilter filter, string route, int categoryId)
+        {
+            var validFilter = new PaginationFilter(filter.PageNumber, filter.PageSize);
+            var pagedData = await _product.GetProductDetailsByCategoryId(route, _uriService, categoryId);
+            var totalRecords = await _product.GetTotalRecords();
+            var pagedResult =
+                PaginationHelper.CreatePagedResponse<ProductDetailDto>(pagedData, validFilter, totalRecords, _uriService, route);
+            return await Task.FromResult<IDataResult<List<ProductDetailDto>>>(pagedResult);
+        }
     }
 }

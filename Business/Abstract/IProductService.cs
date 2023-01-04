@@ -20,6 +20,8 @@ namespace Business.Abstract
         Task<IResult> Delete(int id);
         Task<IDataResult<ProductDetailDto>> GetProductDetailById(int id, string route);
         Task<IDataResult<List<ProductDetailDto>>> GetAllWithDetails(PaginationFilter filter, string route);
+        Task<IDataResult<List<ProductDetailDto>>> GetByCategoryId(PaginationFilter filter, string route, int categoryId);
+
 
 
     }

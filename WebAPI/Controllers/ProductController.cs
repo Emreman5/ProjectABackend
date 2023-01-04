@@ -48,6 +48,12 @@ namespace WebAPI.Controllers
             var result = await _productService.GetAllWithDetails(filter, _imageRoot);
             return Ok(result);
         }
+        [HttpGet("DetailsByCategory/{categoryId}")]
+        public async Task<IActionResult> GetAllDetailsByCategoryId([FromQuery] PaginationFilter filter, int categoryId)
+        {
+            var result = await _productService.GetByCategoryId(filter, _imageRoot, categoryId);
+            return Ok(result);
+        }
 
         [HttpPost("Update/{id}")]
         public async Task<IActionResult> Update([FromBody] ProductPostDto product, int id)

@@ -7,6 +7,7 @@ using DataAccess.Concrete.Context;
 using DataAccess.Concrete.Repositories.Abstract;
 using DataAccess.Concrete.Repositories.Concrete;
 using Microsoft.EntityFrameworkCore;
+using Model;
 
 namespace DataAccess.Concrete.UnitOfWork
 {
@@ -27,7 +28,7 @@ namespace DataAccess.Concrete.UnitOfWork
 
         public UnitOfWork(DbContext context)
         {
-            _dbContext = context;
+            _dbContext =  context;
             ProductRepository = new ProductRepository(_dbContext);
             Test = new TestRepository(_dbContext);
             Order = new OrderRepository(_dbContext);
@@ -62,6 +63,19 @@ namespace DataAccess.Concrete.UnitOfWork
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public CustomUser GetUserByToken(string token)
+        {
+            var userId = _dbContext.Set<ApplicationUserToken>().FirstOrDefault(u => u.Value == token).UserId;
+            var user = _dbContext.Set<CustomUser>().FirstOrDefault(u => u.Id == userId);
+            return user;
+        }
+
+        public ApplicationUserToken FindToken(string token)
+        {
+            var userToken = _dbContext.Set<ApplicationUserToken>().FirstOrDefault(t => t.Value == token);
+            return userToken;
         }
 
         public MsSqlDbContext GetContext()

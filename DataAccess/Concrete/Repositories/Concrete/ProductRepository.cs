@@ -50,12 +50,18 @@ namespace DataAccess.Concrete.Repositories.Concrete
             return Task.FromResult(result);
         }
 
-        public async Task<List<ProductDetailDto>> GetProductDetails(string route, IUriService uriService)
+        public Task<List<ProductDetailDto>> GetProductDetails(string route, IUriService uriService)
         {
             var products = _context.Menus.ToList();
             var result = products.Select(p => GetProductDetailDtoById(p.Id, route, uriService).Result).ToList();
-            return result;
+            return Task.FromResult(result);
         }
-        
+
+        public Task<List<ProductDetailDto>> GetProductDetailsByCategoryId(string route, IUriService uriService, int id)
+        {
+            var products = _context.Menus.Where(p => p.CategoryId == id).ToList();
+            var result = products.Select(p => GetProductDetailDtoById(p.Id, route, uriService).Result).ToList();
+            return Task.FromResult(result);
+        }
     }
 }

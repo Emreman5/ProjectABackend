@@ -81,12 +81,12 @@ namespace Business.Concrete
             return new SuccessDataResult<AuthResponseDto>(result);
         }
 
-        public  IDataResult<Token> RefreshToken(string token, IConfiguration config)
+        public async Task<IDataResult<Token>> RefreshToken(string token, IConfiguration config)
         {
             var context = _unitOfWork.GetContext();
             var user =  _userManager.Users.FirstOrDefault(x => x.RefreshToken == token);
             var accessTokenGenerator = new AccessTokenGenerator(context, config, user);
-            var expireDate = accessTokenGenerator.GetTokenExpireDate(token, user).Result;
+            var expireDate = await accessTokenGenerator.GetTokenExpireDate(token, user);
             if (expireDate < DateTime.Now && user.RefreshTokenExpireDate!.Value > DateTime.Now)
             {
                 
@@ -106,9 +106,30 @@ namespace Business.Concrete
             return new ErrorDataResult<Token>(AuthMessages.TokenStillUsable);
         }
 
-        public IDataResult<AuthResponseDto> AuthMe(string token)
+        public async Task<IDataResult<AuthResponseDto>> AuthMe(string token, string refreshToken, IConfiguration config)
         {
-            throw new NotImplementedException();
+            var user = _unitOfWork.GetUserByToken(token);
+            Token newToken = new Token();
+            var roles = await _userManager.GetRolesAsync(user);
+            var userToken = _unitOfWork.FindToken(token);
+            var refreshResult = await RefreshToken(refreshToken, config);
+            var response = new AuthResponseDto();
+            if (!refreshResult.IsSuccess && refreshResult.Message == AuthMessages.TryAgain)
+            {
+                return new ErrorDataResult<AuthResponseDto>(AuthMessages.TryAgain);
+            }
+
+            if (!refreshResult.IsSuccess)
+            {
+                newToken.ExpireDate = userToken.ExpireDate;
+                newToken.RefreshTokenExpireDate = user.RefreshTokenExpireDate;
+                newToken.RefreshToken = user.RefreshToken;
+                newToken.TokenBody = token;
+                response.SetUser(user,roles.ToList(),newToken,"x");
+                return new SuccessDataResult<AuthResponseDto>(response);
+            }
+            response.SetUser(user,roles.ToList(), refreshResult.Data, "A");
+            return new SuccessDataResult<AuthResponseDto>(response);
         }
 
         private async Task<IResult> UserExistsEmail(string email)

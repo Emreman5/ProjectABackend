@@ -31,14 +31,25 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("Refresh")]
-        public Task<IActionResult> Refresh([FromQuery] string token)
+        public async Task<IActionResult> Refresh([FromQuery] string token)
         {
-            var result = _authService.RefreshToken(token, _config);
+            var result = await _authService.RefreshToken(token, _config);
             if (result.IsSuccess == false)
             {
-                return Task.FromResult<IActionResult>(Unauthorized(result));
+                return Unauthorized(result);
             }
-            return Task.FromResult<IActionResult>(Ok(result));
+            return Ok(result);
+        }
+        [HttpGet("AuthMe")]
+        public async Task<IActionResult> Refresh([FromHeader] string token, string refreshToken)
+        {
+            var result = await _authService.AuthMe(token, refreshToken, _config);
+            if (result.IsSuccess == false)
+            {
+                return Unauthorized(result);
+            }
+
+            return Ok(result);
         }
     }
 }

@@ -11,8 +11,8 @@ namespace Business.Abstract
     {
         public Task<IDataResult<AuthResponseDto>> Register(RegisterDto registerDto, IConfiguration config);
         public Task<IDataResult<AuthResponseDto>> Login(LoginDto loginDto, IConfiguration config);
-        public IDataResult<Token> RefreshToken(string token, IConfiguration config);
-        public IDataResult<AuthResponseDto> AuthMe(string token);
+        public Task<IDataResult<Token>> RefreshToken(string token, IConfiguration config);
+        public Task<IDataResult<AuthResponseDto>> AuthMe(string token, string refreshToken, IConfiguration config);
 
 
 

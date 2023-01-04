@@ -16,6 +16,8 @@ namespace DataAccess.Concrete.Repositories.Abstract
     {
         Task<ProductDetailDto> GetProductDetailDtoById(int id, string route, IUriService uriService);
         Task<List<ProductDetailDto>> GetProductDetails(string route, IUriService uriService);
+        Task<List<ProductDetailDto>> GetProductDetailsByCategoryId(string route, IUriService uriService, int id);
+
 
     }
 }

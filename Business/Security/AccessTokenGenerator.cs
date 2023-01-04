@@ -31,7 +31,7 @@ namespace Business.Security
 
         private Token GeneterateToken()
         {
-            DateTime expireDate = DateTime.Now.AddMinutes(15);
+            DateTime expireDate = DateTime.Now.AddMinutes(1);
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_config["Application:Secret"]);
             var authRoles = from role in _context.Roles
