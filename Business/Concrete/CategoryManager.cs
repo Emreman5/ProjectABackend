@@ -52,11 +52,11 @@ namespace Business.Concrete
             return new SuccessDataResult<Category>(selectedCategory);
         }
 
-        public IResult Delete(int id)
+        public async Task<IResult> Delete(int id)
         {
-            var selectedCategory = _category.GetByIdAsync(id).Result;
-            _category.DeleteAsync(selectedCategory);
-            _unitOfWork.CompleteAsync();
+            var selectedCategory = await _category.GetByIdAsync(id);
+            await _category.DeleteAsync(selectedCategory);
+            await _unitOfWork.CompleteAsync();
             return new SuccessResult();
         }
     }

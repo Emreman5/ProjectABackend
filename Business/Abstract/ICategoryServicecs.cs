@@ -10,6 +10,6 @@ namespace Business.Abstract
         Task<IResult> Add(CategoryDto category);
         IResult Update(CategoryDto category, int id);
         IDataResult<Category> GetById(int id);
-        IResult Delete(int id);
+        Task<IResult> Delete(int id);
     }
 }
