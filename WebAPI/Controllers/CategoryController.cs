@@ -24,13 +24,13 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
         [HttpPost("Add")]
-        public Task<IActionResult> Add([FromBody] CategoryDto category)
+        public async Task<IActionResult> Add([FromBody] CategoryDto category)
         {
-            var result = _categoryService.Add(category).Result;
-            return Task.FromResult<IActionResult>(Ok(result));
+            var result =  await _categoryService.Add(category);
+            return Ok(result);
         }
 
-        [HttpPost("Update/{id}")]
+        [HttpPut("Update/{id}")]
         public Task<IActionResult> Update([FromBody] CategoryDto category, int id)
         {
             var result = _categoryService.Update(category, id);

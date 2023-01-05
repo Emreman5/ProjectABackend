@@ -37,7 +37,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("detail/{id}")]
-        public async Task<IActionResult> GetAll(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var result =  await _productService.GetProductDetailById(id, _imageRoot);
             return Ok(result);
@@ -56,10 +56,10 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
-        [HttpPost("Update/{id}")]
+        [HttpPut("Update/{id}")]
         public async Task<IActionResult> Update([FromBody] ProductPostDto product, int id)
         {
-            var result = _productService.Update(product, id);
+            var result = await _productService.Update(product, id);
             if (!result.IsSuccess)
             {
                 return BadRequest(result);
@@ -67,6 +67,7 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
+        [Authorize("Admin")]
         [HttpDelete("Delete/{id}")]
         public async Task<IActionResult> Delete(int id)
         {

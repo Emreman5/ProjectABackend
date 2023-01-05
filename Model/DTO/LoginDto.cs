@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Model.Abstract
+namespace Model.DTO
 {
-    public interface IDto
+    public class LoginDto
     {
+        public string? Email { get; set; }
+        public string? Password { get; set; }
     }
 }

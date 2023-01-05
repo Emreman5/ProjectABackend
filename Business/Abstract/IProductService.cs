@@ -9,14 +9,15 @@ using Core.Utilities.Pagination;
 using Microsoft.AspNetCore.Http;
 using Model.Abstract;
 using Model.DTO;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Business.Abstract
 {
     public interface IProductService
     {
         IDataResult<List<Product>> GetAll(PaginationFilter filter, string route);
-         Task<IResult> Add(ProductPostDto product, List<IFormFile> files);
-        IResult Update(ProductPostDto product, int id);
+         Task<IResult> Add(ProductPostDto product, List<IFormFile> files); 
+        Task<IResult> Update(ProductPostDto product, int id);
         IDataResult<Product> GetById(int id);
         Task<IResult> Delete(int id);
         Task<IDataResult<ProductDetailDto>> GetProductDetailById(int id, string route);

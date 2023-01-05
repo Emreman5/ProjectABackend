@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace Model.Abstract
+namespace Model.DTO
 {
     public class ProductDetailDto
     {
@@ -14,6 +14,6 @@ namespace Model.Abstract
         public string? CategoryName { get; set; }
         public double Price { get; set; }
         public string? Description { get; set; }
-        public List<System.Uri>? Images { get; set; }
+        public List<Uri>? Images { get; set; }
     }
 }

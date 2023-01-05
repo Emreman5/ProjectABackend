@@ -8,6 +8,7 @@ using Business.Constants.Messages;
 using Business.Security;
 using Core.Entities.Concrete;
 using Core.Utilities.Business;
+using Core.Utilities.Helpers.GuidHelper;
 using Core.Utilities.ResponseTypes;
 using DataAccess.Concrete;
 using DataAccess.Concrete.UnitOfWork;
@@ -46,9 +47,10 @@ namespace Business.Concrete
             var user = new CustomUser()
             {
                 Email = registerDto.Email,
-                FullName = registerDto.FullName
+                FullName = registerDto.FullName,
+                UserName = GuidHelper.CreateGuid()
             };
-            await _userManager.CreateAsync(user, registerDto.Password);
+            var rr = await _userManager.CreateAsync(user, registerDto.Password);
             await DefaultRole();
             await _userManager.AddToRoleAsync(user, "User");
 
@@ -136,6 +138,21 @@ namespace Business.Concrete
             return new SuccessDataResult<AuthResponseDto>(response);
         }
 
+        public async Task<IDataResult<AuthResponseDto>> RegisterAdminUser(RegisterDto registerDto, IConfiguration config)
+        {
+            var registerResult = await Register(registerDto, config);
+            if (!registerResult.IsSuccess)
+            {
+                return registerResult;
+            }
+
+            var user = await _userManager.FindByIdAsync(registerResult.Data.UserId);
+            await AdminRole();
+            await _userManager.AddToRoleAsync(user, "Admin");
+            registerResult.Data.Roles.Add("Admin");
+            return registerResult;
+        }
+
 
         private async Task<IResult> UserExistsEmail(string email)
         {
@@ -154,6 +171,18 @@ namespace Business.Concrete
             {
                 IdentityRole role = new IdentityRole("User");
                 role.NormalizedName = "User";
+
+                _roleManager.CreateAsync(role).Wait();
+            }
+        }
+        private async Task AdminRole()
+        {
+            bool roleExists = await _roleManager.RoleExistsAsync("Admin");
+
+            if (!roleExists)
+            {
+                IdentityRole role = new IdentityRole("Admin");
+                role.NormalizedName = "Admin";
 
                 _roleManager.CreateAsync(role).Wait();
             }

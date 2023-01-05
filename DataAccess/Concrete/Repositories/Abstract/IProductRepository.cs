@@ -9,6 +9,7 @@ using Core.Utilities.Uri;
 using Microsoft.EntityFrameworkCore;
 using Model;
 using Model.Abstract;
+using Model.DTO;
 
 namespace DataAccess.Concrete.Repositories.Abstract
 {
